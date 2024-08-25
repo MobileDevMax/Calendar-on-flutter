@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+
+   void main() {
+     runApp(MyApp());
+   }
+
+   class MyApp extends StatelessWidget {
+     @override
+     Widget build(BuildContext context) {
+       return MaterialApp(
+         title: 'Calendar',
+         theme: ThemeData(
+           primarySwatch: Colors.blue,
+         ),
+         home: CalendarPage(),
+       );
+     }
+   }
+
+   class CalendarPage extends StatefulWidget {
+     @override
+     _CalendarPageState createState() => _CalendarPageState();
+   }
+
+   class _CalendarPageState extends State<CalendarPage> {
+     DateTime _currentDate = DateTime.now();
+
+     List<String> _getDaysInMonth(DateTime date) {
+       int month = date.month;
+       int year = date.year;
+
+       //First and last day of the month
+       DateTime firstDay = DateTime(year, month, 1);
+       DateTime lastDay = DateTime(year, month + 1, 0);
+
+       List<String> days = [];
+       for (int i = firstDay.day; i <= lastDay.day; i++) {
+         days.add('$i');
+       }
+       return days;
+     }
+
+     void _previousMonth() {
+       setState(() {
+         _currentDate = DateTime(_currentDate.year, _currentDate.month - 1);
+       });
+     }
+
+     void _nextMonth() {
+       setState(() {
+         _currentDate = DateTime(_currentDate.year, _currentDate.month + 1);
+       });
+     }
+
+     String _getMonthName(int month) {
+       const List<String> monthNames = [
+         "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+       ];
+       return monthNames[month - 1];
+     }
+
+     @override
+     Widget build(BuildContext context) {
+       List<String> days = _getDaysInMonth(_currentDate);
+       String monthTitle = '${_getMonthName(_currentDate.month)} ${_currentDate.year}';
+
+       return Scaffold(
+         appBar: AppBar(
+           title: Text('Calendar'),
+         ),
+         body: Column(
+           children: [
+             Padding(
+               padding: const EdgeInsets.all(8.0),
+               child: Row(
+                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                 children: [
+                   IconButton(
+                     icon: Icon(Icons.arrow_left),
+                     onPressed: _previousMonth,
+                   ),
+                   Text(
+                     monthTitle,
+                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                   ),
+                   IconButton(
+                     icon: Icon(Icons.arrow_right),
+                     onPressed: _nextMonth,
+                   ),
+                 ],
+               ),
+             ),
+             Expanded(
+               child: GridView.builder(
+                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                   crossAxisCount: 7, // 7 days a week
+                 ),
+                 itemCount: days.length,
+                 itemBuilder: (context, index) {
+                   return Card(
+                     child: Center(
+                       child: Text(
+                         days[index],
+                         style: TextStyle(fontSize: 16),
+                       ),
+                     ),
+                   );
+                 },
+               ),
+             ),
+           ],
+         ),
+       );
+     }
+   }
